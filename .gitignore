@@ -1,0 +1,7 @@
+data/
+data_h264
+data_h264_rotated
+*.log
+openpose/
+meditation/
+audio/
