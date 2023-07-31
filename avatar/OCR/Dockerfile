@@ -24,13 +24,11 @@ RUN pip install xtcocotools
 RUN pip install openmim
 RUN mim install mmengine "mmcv>=2.0.0"
 RUN mim install "mmdet>=3.0.0"
+
 # Install MMPose
 RUN conda clean --all
-RUN git clone https://github.com/open-mmlab/mmpose.git /mmpose
-WORKDIR /mmpose
+RUN git clone https://github.com/open-mmlab/mmocr.git /mmocr
+WORKDIR /mmocr
 RUN git checkout main
 ENV FORCE_CUDA="1"
-RUN pip install -r requirements/build.txt
-RUN pip install --no-cache-dir -e .
-RUN pip install --upgrade numpy
-COPY pose_track.py /
+RUN pip install -v -e .

@@ -20,7 +20,7 @@ def process_video(video_file:Path, dest:Path,fps:int):
     file_name = video_file.stem
     output_folder = dest/ file_name
     output_folder.mkdir(exist_ok=True)
-    cmd = f'ffmpeg -i "{str(video_file)}" -vf fps={fps} "{str(output_folder)}/{file_name}_%04d.png"'
+    cmd = f'ffmpeg -i "{str(video_file)}" -vf "fps={fps},scale=720:-1" "{str(output_folder)}/{file_name}_%04d.png"'
     print(cmd)
     result = invoke.run(cmd, hide=False, warn=True)
     return result.ok

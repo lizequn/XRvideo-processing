@@ -5,6 +5,7 @@ from tqdm.auto import tqdm
 import numpy as np
 import cv2
 import json
+import pickle
 
 import supervision as sv
 
@@ -57,8 +58,8 @@ def segment(sam_predictor: SamPredictor, image: np.ndarray, xyxy: np.ndarray) ->
 if __name__ == "__main__":
     for frame_folder in tqdm(frame_folders):
         video_name = frame_folder.name
-        output_path = OUT_PATH/ f'{video_name}_anno.json'
-        output_path.mkdir(exist_ok=True)
+        output_path = OUT_PATH/ f'{video_name}_anno.pkl'
+        # output_path.mkdir(exist_ok=True)
         #images={}
         annotations={}
         image_paths = sv.list_files_with_extensions(
@@ -85,7 +86,7 @@ if __name__ == "__main__":
             del image
             if DRY_RUN:
                 break
-        with open(str(output_path),'w') as f:
-            json.dump(annotations,f)
+        with open(output_path,'wb') as f:
+            pickle.dump(annotations,f)
         if DRY_RUN:
             break

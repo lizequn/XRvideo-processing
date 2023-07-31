@@ -6,3 +6,9 @@ openpose/
 meditation/
 audio/
 avatar/videos/
+.idea/
+*.mp4
+*.png
+*.pkl
+*.csv
+*.json
