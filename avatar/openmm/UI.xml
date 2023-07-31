@@ -1,0 +1,23 @@
+<View>
+  <Image name="image" value="$image" zoom="true"/>
+  <KeyPointLabels name="KeyPointLabels" toName="image">
+    <Label value="menu" smart="true" background="#e51515" showInline="true"/>
+    <Label value="avator" smart="true" background="#412cdd" showInline="true"/>
+    <Label value="option" smart="true" background="#FF8966" showInline="true"/>
+  </KeyPointLabels>
+  <RectangleLabels name="RectangleLabels" toName="image">
+  	<Label value="menu" background="#FF0000"/>
+  	<Label value="avator" background="#0d14d3"/>
+    <Label value="option" background="#FF8966"/>
+  </RectangleLabels>
+  <PolygonLabels name="PolygonLabels" toName="image">
+  	<Label value="menu" background="#FF0000"/>
+  	<Label value="avator" background="#0d14d3"/>
+    <Label value="option" background="#FF8966"/>
+  </PolygonLabels>
+  <BrushLabels name="BrushLabels" toName="image">
+  	<Label value="menu" background="#FF0000"/>
+  	<Label value="avator" background="#0d14d3"/>
+    <Label value="option" background="#FF8966"/>
+  </BrushLabels>
+</View>

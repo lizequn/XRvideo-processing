@@ -1,0 +1,16 @@
+services:
+  tagger:
+    image: tagger
+    container_name: tagger_container
+    command: "/bin/bash"
+    stdin_open: true 
+    tty: true
+    volumes:
+      - ../data:/work/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
