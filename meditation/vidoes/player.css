@@ -1,0 +1,29 @@
+.control{
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    padding: 10px;
+    width:50%;
+}
+.control >div{
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
+}
+.play_button {
+    grid-row: 1/3;
+    width: 100%;
+    height: 100%;
+}
+.play_button button{
+    width: 80%;
+    height: 80%;
+}
+.time_select{
+    padding: 20px;
+}
+.time_select label{
+    font-size: 20px;
+}
+.time_select select{
+    font-size: 20px;
+}

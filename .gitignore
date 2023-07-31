@@ -3,7 +3,6 @@ data_h264
 data_h264_rotated
 *.log
 openpose/
-meditation/
 audio/
 avatar/videos/
 .idea/

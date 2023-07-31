@@ -1,0 +1,120 @@
+<head>
+  <link href="https://vjs.zencdn.net/8.3.0/video-js.css" rel="stylesheet" />
+  <link href="player.css" rel="stylesheet" />
+  <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+  <!-- <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script> -->
+</head>
+
+<body>
+<div class="container">
+
+<video
+    id="my-video"
+    class="video-js vjs-default-skin"
+    controls
+    preload="auto"
+    data-setup=""
+    height="700px"
+>
+    <!-- <source src="videoprocess/data/01_02_2023_1_h265.mp4" type="video/mp4" /> -->
+    <p class="vjs-no-js">
+    To view this video please enable JavaScript, and consider upgrading to a
+    web browser that
+    <a href="https://videojs.com/html5-video-support/" target="_blank"
+        >supports HTML5 video</a
+    >
+    </p>
+</video>
+<div class="control">
+    <div class="play_button"><button id="play_button">Play</button></div>
+    <div>Current time:</div>
+    <div>Start time:</div>
+    <div>End time:</div>
+    <div>Duration:</div>
+    <div id="current_time"></div>
+    <div id="start_time"></div>
+    <div id="end_time"></div>
+    <div id="duration"></div>
+</div>
+<div class="time_select">
+    <label for="seek_time">Select start time:   </label>
+    <select name="seek_time" id="seek_time">
+    </select>
+</div>
+<div>
+    <input type="file" id="file" onchange="onFileChange()" />
+    <div id="file_name"></div>
+</div>
+</div>
+  <script src="https://vjs.zencdn.net/8.3.0/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+  <script>
+    const range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step))
+    function init(){
+        var myPlayer = videojs.getPlayer('my-video');
+        setInterval(function() {
+            var currentTime = myPlayer.currentTime();
+            currentTime = Math.round(currentTime)
+            $("#current_time").html(currentTime);
+        }, 100);
+        $("#play_button").on("click",function(event){
+            if (myPlayer.paused()){
+                myPlayer.play();
+                $("#play_button").html("pause")
+            }else{
+                myPlayer.pause();
+                $("#play_button").html("play")
+            }
+        });
+        const intervaltime=10;
+        var pausetime = intervaltime;
+        document.getElementById("start_time").innerHTML = pausetime-intervaltime;
+        document.getElementById("end_time").innerHTML = pausetime;
+        
+        myPlayer.on('timeupdate', function (e) {
+            if (myPlayer.currentTime() >= pausetime) {
+                myPlayer.pause();
+                pausetime = Math.floor(myPlayer.currentTime() + intervaltime);
+                $("#start_time").html(pausetime-intervaltime);
+                $("#end_time").html(pausetime);
+                $("#seek_time").val(pausetime-intervaltime).change();
+            }
+        });
+        if (myPlayer.readyState() < 1) {
+            // wait for loadedmetdata event
+            myPlayer.one("loadedmetadata", onLoadedMetadata);
+        }
+        else {
+            // metadata already loaded
+            onLoadedMetadata();
+        }
+        function onLoadedMetadata() {
+            var duration = Math.floor(myPlayer.duration());
+            var time_list = range(0,duration,10);
+            $('#duration').html(Math.round(myPlayer.duration()));
+            $.each(time_list, function (i, item) {
+                $('#seek_time').append($('<option>', { 
+                    value: item,
+                    text : item 
+                }));
+                $('#seek_time').on('change', function() {
+                    myPlayer.currentTime(this.value);
+                });
+            });
+        }
+    }
+    $(document).ready(function(){
+        // init()
+    })
+    function onFileChange(){
+        let file = document.getElementById('file');
+        var myPlayer = videojs.getPlayer('my-video');
+        var filename = file.value.replace(/^.*[\\\/]/, '')
+        myPlayer.src({type:"video/mp4",src:"./"+filename});
+        $('#file_name').html("Current file: "+ filename);
+        init();
+    }
+
+    
+  </script>
+</body>
