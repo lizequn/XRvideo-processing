@@ -1,0 +1,57 @@
+FROM nvcr.io/nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
+ENV	    DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y git
+RUN git clone https://github.com/microsoft/onnxruntime.git /code
+
+ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
+RUN apt-get update && apt-get install -y --no-install-recommends python3-dev ca-certificates g++ python3-numpy gcc make git python3-setuptools python3-wheel python3-packaging python3-pip aria2 && aria2c -q -d /tmp -o cmake-3.26.3-linux-x86_64.tar.gz https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-x86_64.tar.gz && tar -zxf /tmp/cmake-3.26.3-linux-x86_64.tar.gz --strip=1 -C /usr
+
+RUN cd /code && python3 -m pip install -r tools/ci_build/github/linux/docker/inference/x64/python/cpu/scripts/requireme\
+nts.txt && /bin/bash ./build.sh --allow_running_as_root --skip_submodule_sync --cuda_home /usr/local/cuda --cudnn_home /usr/lib/x86_64-linux-gnu/ --use_cuda --config Release --build_wheel --update --build --parallel --cmake_extra_defines ONNXRUNTIME_VERSION=$(cat ./VERSION_NUMBER) 'CMAKE_CUDA_ARCHITECTURES=52;60;61;70;75;86'
+
+FROM ubuntu:20.04 as dev-base
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        ccache \
+        cmake \
+        curl \
+        git \
+        libjpeg-dev \
+        libpng-dev && \
+    rm -rf /var/lib/apt/lists/*
+RUN /usr/sbin/update-ccache-symlinks
+RUN mkdir /opt/ccache && ccache --set-config=cache_dir=/opt/ccache
+ENV PATH /opt/conda/bin:$PATH
+
+FROM dev-base as conda
+ARG PYTHON_VERSION=3.8
+
+RUN curl -fsSL -v -o ~/miniconda.sh -O  "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+
+# Manually invoke bash on miniconda script per https://github.com/conda/conda/issues/10431
+RUN chmod +x ~/miniconda.sh && \
+    bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    /opt/conda/bin/conda install -y python=${PYTHON_VERSION} cmake conda-build pyyaml numpy ipython && \
+    /opt/conda/bin/conda clean -ya
+
+
+FROM nvcr.io/nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+ENV	    DEBIAN_FRONTEND=noninteractive
+COPY --from=0 /code/build/Linux/Release/dist /root
+COPY --from=0 /code/dockerfiles/LICENSE-IMAGE.txt /code/LICENSE-IMAGE.txt
+COPY --from=conda /opt/conda /opt/conda
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 ca-certificates libjpeg-dev libpng-dev
+
+RUN apt install -y --no-install-recommends gcc &&\
+    rm -rf /var/lib/apt/lists/*
+
+ENV PATH /opt/conda/bin:$PATH
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
+
+WORKDIR /work

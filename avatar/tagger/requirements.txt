@@ -5,5 +5,4 @@ huggingface-hub
 gradio
 numpy
 pandas
-onnxruntime-gpu
 tqdm
