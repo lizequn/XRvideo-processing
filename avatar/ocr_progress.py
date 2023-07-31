@@ -144,7 +144,8 @@ frames_dir = Path('./frames')
 
 
 if __name__=='__main__':
-    frame_folders = [f for f in frames_dir.glob("*") if f.is_dir()]
+    # frame_folders = [f for f in frames_dir.glob("*") if f.is_dir()]
+    frame_folders = [Path('./frames/1025B_Avatar_Bowling_cut'),Path('./frames/1025B_Avatar_Workroom_cut')]
     with open('./bg.txt','r') as f:
         grey_bg_ids = f.readlines()
     grey_bg_ids = [line.strip() for line in grey_bg_ids]

@@ -11,3 +11,4 @@ avatar/videos/
 *.pkl
 *.csv
 *.json
+*.onnx

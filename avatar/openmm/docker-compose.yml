@@ -1,0 +1,17 @@
+services:
+  label_anything:
+    image: label_anything
+    container_name: label_anything_container
+    entrypoint: ["/usr/bin/supervisord"]
+    volumes:
+      - ./data:/work/data
+    ports:
+      - 8080:8080
+      - 8003:8003
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
